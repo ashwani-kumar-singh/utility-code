@@ -1,0 +1,20 @@
+[
+  {
+    "audit_workflow": "FAQ_AUDIT",
+    "audit_processor": "FAQ",
+    "audit_strategy": "DATA_PERSISTENCE_LEVEL_BOT",
+    "expiration_in_days": 30
+  },
+  {
+    "audit_workflow": "CAMPAIGN",
+    "audit_processor": "DEFAULT",
+    "audit_strategy": "DATA_PERSISTENCE_LEVEL_BOT",
+    "expiration_in_days": 20
+  },
+  {
+    "audit_workflow": "CAMPAIGN_MESSAGE",
+    "audit_processor": "DEFAULT",
+    "audit_strategy": "DATA_PERSISTENCE_LEVEL_BOT",
+    "expiration_in_days": 20
+  }
+]
