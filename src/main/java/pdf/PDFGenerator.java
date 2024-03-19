@@ -6,9 +6,8 @@ import com.itextpdf.text.pdf.draw.DottedLineSeparator;
 import pdf.event.HeaderAndFooterEvent;
 import pdf.event.TOCEvent;
 
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,26 +15,24 @@ import java.nio.file.Paths;
 import java.util.AbstractMap;
 import java.util.List;
 
-public class TOCEventPDF {
+public class PDFGenerator {
+    final static String DEST = "\\GitHub\\tutorials\\pdf\\TOC_final.pdf";
 
     public static void main(String[] args) {
-        String SRC = "\\GitHub\\tutorials\\pdf\\TEMP.pdf";
-        String DEST = "\\GitHub\\tutorials\\pdf\\TOC_final.pdf";
         try {
-            createPdf(SRC);
-            reorderDocument(SRC, DEST);
-            Files.deleteIfExists(Paths.get(SRC));
-        } catch (IOException | DocumentException | URISyntaxException e) {
+            createPdf();
+        } catch (IOException | DocumentException e) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void createPdf(String dest) throws IOException, DocumentException, URISyntaxException {
-
+    public static void createPdf() throws IOException, DocumentException, URISyntaxException {
         Font titleFont = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD, BaseColor.BLUE);
         Document document = new Document();
-        OutputStream os = Files.newOutputStream(Paths.get(dest));
-        PdfWriter pdfWriter = PdfWriter.getInstance(document, os);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        PdfWriter pdfWriter = PdfWriter.getInstance(document, byteArrayOutputStream);
         Rectangle rectangle = new Rectangle(30, 30, 550, 800);
         pdfWriter.setBoxSize("rectangle", rectangle);
 
@@ -54,7 +51,7 @@ public class TOCEventPDF {
         document.add(img);
 
         document.newPage();
-        addEmptyLine(document, 20);
+        addEmptyLine(document, 5);
         Paragraph end = new Paragraph("END OF DOCUMENT",
                 new Font(Font.FontFamily.HELVETICA, 40, Font.BOLD, BaseColor.GRAY));
         end.setAlignment(Element.ALIGN_CENTER);
@@ -101,15 +98,17 @@ public class TOCEventPDF {
         table.setTotalWidth(300);
         document.add(table);
         document.close();
+        reorderDocument(byteArrayOutputStream);
     }
 
-    public static void reorderDocument(String src, String dest) throws IOException, DocumentException {
-        PdfReader reader = new PdfReader(src);
+    public static void reorderDocument(ByteArrayOutputStream byteArrayOutputStream) throws IOException, DocumentException {
+        PdfReader reader = new PdfReader(byteArrayOutputStream.toByteArray());
         int totalPages = reader.getNumberOfPages();
 
         // Create a document object for the new reordered document
         Document reorderedDocument = new Document();
-        PdfCopy copy = new PdfCopy(reorderedDocument, new FileOutputStream(dest));
+
+        PdfCopy copy = new PdfCopy(reorderedDocument, Files.newOutputStream(Paths.get(DEST)));
         reorderedDocument.open();
 
         // Add the first page (usually the cover) if exists
@@ -136,35 +135,6 @@ public class TOCEventPDF {
         reader.close();
     }
 
-    public static void addHeaderFooter(String src, String dest) throws IOException, DocumentException {
-        PdfReader reader = new PdfReader(src);
-        int n = reader.getNumberOfPages();
-        Document document = new Document(reader.getPageSizeWithRotation(1));
-
-        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(dest));
-        HeaderAndFooterEvent headerAndFooterEvent = new HeaderAndFooterEvent();
-        writer.setPageEvent(headerAndFooterEvent);
-
-        document.open();
-        PdfContentByte cb = writer.getDirectContent();
-
-        PdfImportedPage page;
-        for (int i = 1; i <= n; i++) {
-            document.newPage();
-            page = writer.getImportedPage(reader, i);
-            cb.addTemplate(page, 0, 0);
-        }
-
-        document.close();
-        reader.close();
-    }
-
-    private static void addEmptyLine(Paragraph paragraph, int number) {
-        for (int i = 0; i < number; i++) {
-            paragraph.add(new Paragraph(" "));
-        }
-    }
-
     private static void addEmptyLine(Document document, int number) {
         for (int i = 0; i < number; i++) {
             try {
@@ -174,6 +144,5 @@ public class TOCEventPDF {
             }
         }
     }
-
 
 }
