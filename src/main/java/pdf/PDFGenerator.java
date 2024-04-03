@@ -6,8 +6,10 @@ import com.itextpdf.text.pdf.draw.DottedLineSeparator;
 import pdf.event.HeaderAndFooterEvent;
 import pdf.event.TOCEvent;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,7 +18,7 @@ import java.util.AbstractMap;
 import java.util.List;
 
 public class PDFGenerator {
-    final static String DEST = "\\GitHub\\tutorials\\pdf\\TOC_final.pdf";
+    final static String DEST = "C:\\Users\\Ashwanikumar_Singh\\OneDrive - EPAM\\work\\epam\\engx_assignment\\clean-code-java-general-principles_991870bf-dda1-4c37-8590-67a794ab7da4\\Comments\\TOC_final.pdf";
 
     public static void main(String[] args) {
         try {
@@ -25,10 +27,13 @@ public class PDFGenerator {
             throw new RuntimeException(e);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void createPdf() throws IOException, DocumentException, URISyntaxException {
+    public static void createPdf() throws IOException, DocumentException, URISyntaxException, ClassNotFoundException {
+        OutputStream outputStream = Files.newOutputStream(Paths.get(DEST));
         Font titleFont = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD, BaseColor.BLUE);
         Document document = new Document();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -44,11 +49,8 @@ public class PDFGenerator {
         document.open();
         document.newPage();
 
-        Path path = Paths.get(ClassLoader.getSystemResource("Java_logo.png").toURI());
-        Image img = Image.getInstance(path.toAbsolutePath().toString());
-        img.setAbsolutePosition(450f, 675f);
-        img.scaleAbsolute(100, 100);
-        document.add(img);
+        document.add(new Paragraph("TITLE OF DOCUMENT",
+                new Font(Font.FontFamily.HELVETICA, 40, Font.BOLD, BaseColor.BLACK)));
 
         document.newPage();
         addEmptyLine(document, 5);
@@ -56,8 +58,9 @@ public class PDFGenerator {
                 new Font(Font.FontFamily.HELVETICA, 40, Font.BOLD, BaseColor.GRAY));
         end.setAlignment(Element.ALIGN_CENTER);
         document.add(end);
+        document.newPage();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             document.newPage();
             addEmptyLine(document, 2);
             String title = "Chapter - " + i;
@@ -69,7 +72,16 @@ public class PDFGenerator {
             }
         }
         document.newPage();
+
+        addPDFDocument(document, pdfWriter);
+
         headerAndFooterEvent.setLastPageNumber(pdfWriter.getPageNumber());
+        addTOC(titleFont, document, pdfWriter, tocEvent);
+        document.close();
+        reorderDocument(byteArrayOutputStream, outputStream);
+    }
+
+    private static void addTOC(Font titleFont, Document document, PdfWriter pdfWriter, TOCEvent tocEvent) throws DocumentException {
         PdfPTable table = new PdfPTable(1);
         PdfPCell cell = new PdfPCell();
         cell.setBorderColor(BaseColor.WHITE);
@@ -97,18 +109,48 @@ public class PDFGenerator {
         table.addCell(cell);
         table.setTotalWidth(300);
         document.add(table);
-        document.close();
-        reorderDocument(byteArrayOutputStream);
     }
 
-    public static void reorderDocument(ByteArrayOutputStream byteArrayOutputStream) throws IOException, DocumentException {
+    public static void addPDFDocument(Document document, PdfWriter writer) throws IOException, DocumentException {
+        Path pdfPath = Paths.get("C:\\Users\\Ashwanikumar_Singh\\Downloads\\test_word_file.pdf");
+        byte[] pdfByteArray = Files.readAllBytes(pdfPath);
+        PdfReader reader = null;
+        try {
+            reader = new PdfReader(new ByteArrayInputStream(pdfByteArray));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // Loop through each page of the PDF byte array and add it to the output PDF
+        for (int i = 1; i <= reader.getNumberOfPages(); i++) {
+            document.newPage();
+            PdfImportedPage page = writer.getImportedPage(reader, i);
+            // Create a PdfTemplate for the page
+            PdfTemplate template = writer.getDirectContent().createTemplate(reader.getPageSize(i).getWidth(), reader.getPageSize(i).getHeight());
+
+            // Exclude header and footer region by clipping
+            template.rectangle(0, 60, page.getWidth(), page.getHeight() - 135);  // Adjust coordinates as necessary
+            template.clip();
+            template.newPath();
+            template.addTemplate(page, 0, 0);
+
+            document.setPageSize(new Rectangle(page.getWidth(), page.getHeight()));
+            PdfContentByte contentByte = writer.getDirectContent();
+            contentByte.addTemplate(template, 0, 0);
+
+        }
+        document.newPage();
+        document.setPageSize(PageSize.A4);
+    }
+
+    public static void reorderDocument(ByteArrayOutputStream byteArrayOutputStream, OutputStream outputStream)
+            throws IOException, DocumentException {
         PdfReader reader = new PdfReader(byteArrayOutputStream.toByteArray());
         int totalPages = reader.getNumberOfPages();
 
         // Create a document object for the new reordered document
         Document reorderedDocument = new Document();
 
-        PdfCopy copy = new PdfCopy(reorderedDocument, Files.newOutputStream(Paths.get(DEST)));
+        PdfCopy copy = new PdfCopy(reorderedDocument, outputStream);
         reorderedDocument.open();
 
         // Add the first page (usually the cover) if exists
