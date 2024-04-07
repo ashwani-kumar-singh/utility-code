@@ -71,9 +71,14 @@ public class PDFGenerator {
                 document.add(new Paragraph("Line " + j + " of title " + i));
             }
         }
-        document.newPage();
 
-        addPDFDocument(document, pdfWriter);
+        // add text file
+        addTextFileToDocument(document);
+        // add image file
+        addImageFileToDocument(document);
+        document.newPage();
+        // add pdf file
+        addPDFFileToDocument(document, pdfWriter);
 
         headerAndFooterEvent.setLastPageNumber(pdfWriter.getPageNumber());
         addTOC(titleFont, document, pdfWriter, tocEvent);
@@ -111,7 +116,7 @@ public class PDFGenerator {
         document.add(table);
     }
 
-    public static void addPDFDocument(Document document, PdfWriter writer) throws IOException, DocumentException {
+    public static void addPDFFileToDocument(Document document, PdfWriter writer) throws IOException, DocumentException {
         Path pdfPath = Paths.get("C:\\Users\\Ashwanikumar_Singh\\Downloads\\test_word_file.pdf");
         byte[] pdfByteArray = Files.readAllBytes(pdfPath);
         PdfReader reader = null;
@@ -138,11 +143,28 @@ public class PDFGenerator {
             contentByte.addTemplate(template, 0, 0);
 
         }
-        document.newPage();
         document.setPageSize(PageSize.A4);
+        document.newPage();
     }
 
-    public static void reorderDocument(ByteArrayOutputStream byteArrayOutputStream, OutputStream outputStream)
+    private static void addTextFileToDocument(Document document) throws IOException, DocumentException {
+        Path pdfPath = Paths.get("C:\\Users\\Ashwanikumar_Singh\\Downloads\\tree.txt");
+        byte[] textByteArray = Files.readAllBytes(pdfPath);
+
+        String fileContent = new String(textByteArray);
+        document.newPage();
+        document.add(new Paragraph(fileContent));
+    }
+
+    private static void addImageFileToDocument(Document document) throws IOException, DocumentException {
+        Path pdfPath = Paths.get("C:\\Users\\Ashwanikumar_Singh\\Pictures\\gitlab_issue.PNG");
+        byte[] imageByteArray = Files.readAllBytes(pdfPath);
+        Image image = Image.getInstance(imageByteArray);
+        document.newPage();
+        document.add(image);
+    }
+
+    private static void reorderDocument(ByteArrayOutputStream byteArrayOutputStream, OutputStream outputStream)
             throws IOException, DocumentException {
         PdfReader reader = new PdfReader(byteArrayOutputStream.toByteArray());
         int totalPages = reader.getNumberOfPages();
