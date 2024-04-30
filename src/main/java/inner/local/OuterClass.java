@@ -20,8 +20,7 @@ package inner.local;
  */
 public class OuterClass {
     private void getValue() {
-        // Note that local variable(sum) must be final till JDK 7 hence this code will work
-        // only in JDK 8
+        // Note that local variable(sum) must be final till JDK 7 hence this code will work only in JDK 8
         int sum = 20;
 
         // Local inner Class inside method

@@ -10,6 +10,7 @@ package inner.staticclass;
  * a static nested class cannot refer directly to instance variables or methods defined in its
  * enclosing class: it can use them only through an object reference. They are accessed using the
  * enclosing class name.
+ *
  */
 public class OuterClass {
     static int outerX = 10;
