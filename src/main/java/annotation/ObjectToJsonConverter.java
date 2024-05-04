@@ -52,9 +52,8 @@ public class ObjectToJsonConverter {
         }
         Class<?> clazz = object.getClass();
         if (!clazz.isAnnotationPresent(JsonSerializable.class)) {
-            throw new JsonSerializationException("The class "
-                    + clazz.getSimpleName()
-                    + " is not annotated with JsonSerializable");
+            throw new JsonSerializationException("The class " + clazz.getSimpleName() + " is not annotated " +
+                    "with JsonSerializable");
         }
     }
 
