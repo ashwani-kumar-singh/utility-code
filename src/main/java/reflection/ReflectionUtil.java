@@ -80,7 +80,8 @@ public class ReflectionUtil {
         return clazz.getConstructor();
     }
 
-    public static Constructor<?> getConstructor(String classPath, Class<?>... clazz) throws NoSuchMethodException, ClassNotFoundException {
+    public static Constructor<?> getConstructor(String classPath, Class<?>... clazz) throws NoSuchMethodException,
+            ClassNotFoundException {
         return Class.forName(classPath).getConstructor(clazz);
     }
 

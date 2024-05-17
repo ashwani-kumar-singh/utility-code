@@ -27,7 +27,8 @@ import java.util.Arrays;
  * upgrades of the platform.
  */
 public class Client {
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException, NoSuchFieldException {
         Person person = new Person();
         System.out.println("Field Names: " + ReflectionUtil.getFieldNames(person));
 
@@ -58,23 +59,25 @@ public class Client {
         System.out.println("********************* Implemented Interface  ***************************");
         System.out.println("Interface: " + Arrays.toString(ReflectionUtil.getInterfaces(goat)));
 
-        System.out.println("********************* Constructors, Methods, Declared Methods and Fields  ***************************");
+        System.out.println("********************* Constructors  ***************************");
         Bird bird = new Bird("parrot", true);
         Constructor<?> cons1 = ReflectionUtil.getConstructor(bird);
-        System.out.println("Constructor Names: " + cons1);
+        System.out.println("Constructor Name: " + cons1);
         Constructor<?> cons2 = ReflectionUtil.getConstructor("reflection.animal.Bird", String.class);
-        System.out.println("Constructor Names: " + cons2);
+        System.out.println("Constructor Name: " + cons2);
         Constructor<?> cons3 = ReflectionUtil.getConstructor("reflection.animal.Bird", String.class, boolean.class);
-        System.out.println("Constructor Names: " + cons3);
-
-        System.out.println("Field Names: " + ReflectionUtil.getFieldNames(bird));
-        System.out.println("Method Names: " + ReflectionUtil.getMethodNames(bird));
-        System.out.println("Declared Method Names: " + ReflectionUtil.getDeclaredMethodNames(bird));
+        System.out.println("Constructor Name: " + cons3);
 
         System.out.println("********************* Create Instance using Constructors ***************************");
         Bird bird1 = (Bird) cons1.newInstance();
         Bird bird2 = (Bird) cons2.newInstance("Weaver bird");
         Bird bird3 = (Bird) cons3.newInstance("Weaver bird", false);
+
+        System.out.println("********************* Methods, Declared Methods and Fields  ***************************");
+
+        System.out.println("Field Names: " + ReflectionUtil.getFieldNames(bird));
+        System.out.println("Method Names: " + ReflectionUtil.getMethodNames(bird));
+        System.out.println("Declared Method Names: " + ReflectionUtil.getDeclaredMethodNames(bird));
 
         System.out.println("*************** Call method using instance created from Construct  ******************");
         bird3.walks();
