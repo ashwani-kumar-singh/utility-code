@@ -15,6 +15,8 @@ package generics;
  *     Above code compiles fine but throws ClassCastException at runtime because we are trying to cast Object in the
  *     list to String whereas one of the element is of type Integer.
  * }
+ *
+ * @link <a href="https://www.geeksforgeeks.org/generics-in-java/">...</a>
  */
 public class Client {
     public static void main(String[] args) {
@@ -32,7 +34,7 @@ public class Client {
         System.out.println("are objects equals: "+ GenericType.isEqual(obj1, obj2));
 
         GenericType<String> myClass1 = new GenericType<>();
-        GenericType<Object> myClass2 = new GenericType<Object>();
+        GenericType<Object> myClass2 = new GenericType<>();
         //myClass2=myClass1; // compilation error since GenericType<String> is not a GenericType<Object>
 
     }

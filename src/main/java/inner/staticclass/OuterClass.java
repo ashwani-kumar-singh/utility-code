@@ -43,3 +43,10 @@ public class OuterClass {
     }
 
 }
+
+// static inner class extends by another outside class
+class SomeOtherClass extends OuterClass.StaticNestedClass {
+    public void display() {
+        display();
+    }
+}

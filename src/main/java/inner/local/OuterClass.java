@@ -23,8 +23,12 @@ public class OuterClass {
         // Note that local variable(sum) must be final till JDK 7 hence this code will work only in JDK 8
         int sum = 20;
 
+        class Inner1 {
+            int innerClassVar = 3;
+        }
+
         // Local inner Class inside method
-        class Inner {
+        class Inner extends Inner1 {
             public int divisor;
             public int remainder;
 
@@ -42,7 +46,7 @@ public class OuterClass {
             }
 
             private int getQuotient() {
-                System.out.println("Inside inner class");
+                System.out.println("Inside inner class with Inner1 member variable: " + innerClassVar);
                 return sum / divisor;
             }
         }
@@ -58,3 +62,4 @@ public class OuterClass {
         outer.getValue();
     }
 }
+

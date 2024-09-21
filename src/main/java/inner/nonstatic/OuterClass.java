@@ -1,5 +1,6 @@
 package inner.nonstatic;
 
+
 /**
  *  * There are certain advantages associated with inner classes are as follows:
  *  *
@@ -39,8 +40,9 @@ public class OuterClass {
     public static void main(String[] args) {
         // accessing an inner class
         OuterClass outerObject = new OuterClass();
-        OuterClass.InnerClass innerObject = outerObject.new InnerClass();
+        InnerClass innerObject = outerObject.new InnerClass();
         innerObject.display();
     }
 
 }
+
